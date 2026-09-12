@@ -1,49 +1,55 @@
-# 🚀 SpeedFast - Sistema Multihilo de Asignación y Entrega de Pedidos
+# 🚀 SpeedFast - Sistema Multihilo y Sincronizado de Entregas
 
 ![Java](https://img.shields.io/badge/Java-17%2B-orange)
 ![IDE](https://img.shields.io/badge/IDE-IntelliJ%20IDEA-blue)
-![DuocUC](https://img.shields.io/badge/Evaluaci%C3%B3n-Formativa%20Semana%204-003366)
+![DuocUC](https://img.shields.io/badge/Evaluaci%C3%B3n-Sumativa%20Semana%205-003366)
 
-Proyecto desarrollado para la asignatura **Desarrollo Orientado a Objetos II** de **Duoc UC Online** (Semana 4: *"Ejecutando tareas en paralelo con hilos en Java"*).
+Proyecto desarrollado para la asignatura **Desarrollo Orientado a Objetos II** de **Duoc UC Online** (Semana 5: *"Coordinación de entregas en SpeedFast - Sincronización y Gestión de Hilos"*).
 
-La aplicación simula un sistema de gestión, logística y reparto concurrente en tiempo real para la empresa **SpeedFast**. Integra los pilares de la Programación Orientada a Objetos (**Abstracción**, **Encapsulamiento**, **Herencia**, **Interfaces**, **Polimorfismo**) junto con conceptos de **Programación Concurrente y Multihilo** (`Thread`, `Runnable`, `ExecutorService`).
+La aplicación simula un sistema de gestión, logística y reparto concurrente en tiempo real para la empresa **SpeedFast**. Integra los pilares de la Programación Orientada a Objetos (**Abstracción**, **Encapsulamiento**, **Herencia**, **Interfaces**, **Polimorfismo**) junto con conceptos avanzados de **Programación Concurrente y Sincronización** (`Thread`, `Runnable`, `synchronized`, `ExecutorService`).
 
 ---
 
-## 📋 Descripción del Caso (Semana 4)
+## 📋 Descripción del Caso (Semana 5)
 
-**SpeedFast** optimiza sus entregas mediante la simulación de múltiples repartidores ejecutándose de forma simultánea. Cada repartidor opera como un hilo independiente que recorre su lista asignada de pedidos, simula el tiempo de traslado mediante pausas aleatorias e informa su progreso en tiempo real por consola.
+**SpeedFast** optimiza y coordina sus entregas mediante un entorno multihilo sincronizado. Para evitar la **condición de carrera** (evitar que dos o más repartidores intenten retirar el mismo paquete simultáneamente), el sistema incorpora una **Zona de Carga** como recurso compartido seguro (*thread-safe*).
 
-* 🍕 **PedidoComida:** Alimentos preparados con requerimientos térmicos.
-* 📦 **PedidoEncomienda:** Envíos de paquetería y documentos.
-* ⚡ **PedidoExpress:** Entregas prioritarias en lapsos acotados.
-* 🛵 **Repartidor (Tarea Concurrente):** Clase que implementa `Runnable`, gestionando una cola de pedidos secuencial con simulación de tiempos mediante `Thread.sleep()`.
+Además, los pedidos transitan por un ciclo de vida bien definido representado por un tipo enumerado (`EstadoPedido`), garantizando trazabilidad y consistencia de datos durante toda la operación.
+
+* 📦 **ZonaDeCarga (Recurso Compartido):** Cola sincronizada que administra los pedidos pendientes.
+* 🚦 **EstadoPedido (Enum):** Control de transiciones de estado (`PENDIENTE`, `EN_REPARTO`, `ENTREGADO`).
+* 🛵 **Repartidor (Tarea Concurrente):** Hilo (`Runnable`) que retira pedidos de forma segura de la zona de carga, simula el tiempo de traslado (`Thread.sleep()`) e informa el avance por consola.
+* 🍕 **Subclases de Pedido (`PedidoComida`, `PedidoEncomienda`, `PedidoExpress`, `PedidoEstandar`):** Modelan las distintas especialidades de entregas dentro del sistema.
 
 ---
 
 ## 🛠️ Conceptos y Tecnologías Aplicadas
 
-1. **Programación Concurrente (`Runnable`):** La clase `Repartidor` implementa la interfaz `Runnable`, permitiendo que cada repartidor sea ejecutado como una tarea independiente en su propio hilo de ejecución.
-2. **Gestión de Hilos (`ExecutorService`):** Se utiliza `Executors.newFixedThreadPool(3)` en `Main.java` para coordinar y ejecutar simultáneamente los hilos de repartidores en un entorno de ejecución eficiente.
-3. **Simulación de Tiempos y Manejo de Excepciones:** Se emplea `Thread.sleep()` con intervalos aleatorios (1000 - 3000 ms) para simular los tiempos de viaje de cada entrega, con captura explícita de `InterruptedException`.
-4. **Abstracción e Interfaces:** Mantenimiento de la jerarquía previa con la clase abstracta `Pedido` y las interfaces `Despachable`, `Cancelable` y `Rastreable`.
-5. **Polimorfismo:** Procesamiento heterogéneo de instancias de `PedidoComida`, `PedidoEncomienda` y `PedidoExpress` dentro de las listas asignadas a cada repartidor.
+1. **Sincronización y Recurso Compartido (`synchronized`):** La clase `ZonaDeCarga` protege el acceso a la cola de pedidos mediante métodos sincronizados (`agregarPedido()` y `retirarPedido()`), evitando condiciones de carrera entre hilos concurrentes.
+2. **Control de Estados (`EstadoPedido`):** Uso de un `enum` para garantizar el flujo correcto del ciclo de vida del envío (`PENDIENTE` ➔ `EN_REPARTO` ➔ `ENTREGADO`).
+3. **Programación Concurrente (`Runnable`):** La clase `Repartidor` implementa `Runnable` y consume pedidos dinámicamente en un bucle mientras existan entregas pendientes.
+4. **Pool de Hilos (`ExecutorService`):** Coordinación eficiente de repartidores simultáneos mediante `Executors.newFixedThreadPool(3)` en `Main.java`, con un cierre controlado vía `shutdown()` y `awaitTermination()`.
+5. **Abstracción, Herencia y Polimorfismo:** Mantención de la jerarquía previa con la clase abstracta `Pedido`, sus subclases concretas e interfaces de dominio (`Despachable`, `Cancelable`, `Rastreable`).
 
 ---
 
 ## 📁 Estructura del Proyecto
 
-semana 4/
+```text
+semana 5/
  ├── src/
  │    ├── Cancelable.java        # Interfaz para la gestión de cancelaciones
  │    ├── Despachable.java       # Interfaz para la gestión de despachos
  │    ├── Rastreable.java        # Interfaz para trazabilidad de envíos
- │    ├── Pedido.java            # Clase base abstracta
+ │    ├── EstadoPedido.java      # Enum con los estados (PENDIENTE, EN_REPARTO, ENTREGADO)
+ │    ├── Pedido.java            # Clase base abstracta con atributo EstadoPedido
  │    ├── PedidoComida.java      # Subclase especializada en pedidos de restaurantes
  │    ├── PedidoEncomienda.java  # Subclase especializada en encomiendas
  │    ├── PedidoExpress.java     # Subclase especializada en compras rápidas
- │    ├── Repartidor.java        # Tarea ejecutable (Runnable) con lista de pedidos
- │    └── Main.java              # Clase principal que orquesta la ejecución con ExecutorService
+ │    ├── PedidoEstandar.java    # Subclase concreta estándar
+ │    ├── ZonaDeCarga.java       # Recurso compartido sincronizado (Queue)
+ │    ├── Repartidor.java        # Tarea ejecutable (Runnable) consumidora de ZonaDeCarga
+ │    └── Main.java              # Clase principal con ExecutorService y ZonaDeCarga
  └── README.md                   # Documentación del proyecto
 
 ## ⚙️ Requisitos y Entorno de Ejecución

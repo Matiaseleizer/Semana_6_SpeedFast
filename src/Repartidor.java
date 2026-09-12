@@ -3,36 +3,49 @@ import java.util.List;
 public class Repartidor implements Runnable{
 
     private String nombre;
-    private List <Pedido> pedidos;
+    private ZonaDeCarga zonaDeCarga;
 
-    public Repartidor(String nombre, List <Pedido> pedidos) {
+    public Repartidor(String nombre, ZonaDeCarga zonaDeCarga) {
         this.nombre = nombre;
-        this.pedidos = pedidos;
+        this.zonaDeCarga = zonaDeCarga;
     }
 
     @Override
     public void run() {
 
-        for (Pedido pedido : pedidos) {
-            // 1. Mensaje de inicio de entrega
-            System.out.println("[Repartidor: " + nombre + "] Entregando "
-                    + pedido.getClass().getSimpleName() + " #" + pedido.getIdPedido() + "...");
+        // Bucle dinámico: atiende la cola compartida mientras haya elementos
+        while (true) {
+            // Extracción sincronizada desde la ZonaDeCarga
+            Pedido pedido = zonaDeCarga.retirarPedido();
+
+            // Si la cola está vacía, el hilo concluye su jornada
+            if (pedido == null) {
+                break;
+            }
+
+            // Asignación de datos y cambio a EN_REPARTO
+            pedido.setRepartidor(this.nombre);
+            pedido.setEstado(EstadoPedido.EN_REPARTO);
+
+            System.out.println("[Repartidor: " + nombre + "] Retirando "
+                    + pedido.getClass().getSimpleName() + " #" + pedido.getIdPedido()
+                    + " (Estado: " + pedido.getEstado() + ")...");
 
             try {
-                // 2. Generar tiempo aleatorio entre 1000 ms (1s) y 3000 ms (3s)
+                // Generar tiempo aleatorio de simulación entre 1000 ms y 3000 ms
                 long tiempoEntrega = (long) (Math.random() * 2000 + 1000);
-
-                // 3. Pausar la ejecución de este hilo en particular
                 Thread.sleep(tiempoEntrega);
 
             } catch (InterruptedException e) {
-                // Manejo de excepción en caso de interrupción del hilo
                 System.out.println("La entrega del repartidor " + nombre + " fue interrumpida.");
-                Thread.currentThread().interrupt(); // Restablece el estado de interrupción
+                Thread.currentThread().interrupt();
+                break;
             }
 
-            // 4. Mensaje de confirmación
-            System.out.println("[Repartidor: " + nombre + "] Pedido #" + pedido.getIdPedido() + " entregado.");
+            // Transición final a ENTREGADO
+            pedido.setEstado(EstadoPedido.ENTREGADO);
+            System.out.println("[Repartidor: " + nombre + "] Pedido #" + pedido.getIdPedido()
+                    + " entregado con éxito (Estado: " + pedido.getEstado() + ").");
         }
     }
 

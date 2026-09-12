@@ -1,48 +1,41 @@
-import java.util.ArrayList;
-import java.util.List;
+
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
+        System.out.println("[Zona de carga inicializada]");
 
-        // 1. Crear los pedidos de prueba
-        PedidoComida comida1 = new PedidoComida(1, "Los maitenes", 3);
-        PedidoComida comida2 = new PedidoComida(4, "Av. Italia 500", 2);
+        ZonaDeCarga zonaDeCarga = new ZonaDeCarga();
 
-        PedidoEncomienda encomienda1 = new PedidoEncomienda(2, "Av. Vicuña Mackenna", 6);
-        PedidoEncomienda encomienda2 = new PedidoEncomienda(5, "Alameda 1200", 8);
+        // Creamos instancias de la clase concreta PedidoEstandar
+        zonaDeCarga.agregarPedido(new PedidoEstandar(1, "Santiago Centro", 5));
+        zonaDeCarga.agregarPedido(new PedidoEstandar(2, "Providencia", 8));
+        zonaDeCarga.agregarPedido(new PedidoEstandar(3, "Ñuñoa", 4));
+        zonaDeCarga.agregarPedido(new PedidoEstandar(4, "Recoleta", 6));
+        zonaDeCarga.agregarPedido(new PedidoEstandar(5, "Las Condes", 12));
 
-        PedidoExpress express1 = new PedidoExpress(3, "Calle Miraflores", 7);
-        PedidoExpress express2 = new PedidoExpress(6, "Providencia 300", 4);
+        System.out.println();
 
-        // 2. Crear listas y asignar al menos 2 pedidos a cada repartidor
-        List<Pedido> pedidosMario = new ArrayList<>();
-        pedidosMario.add(express1);
-        pedidosMario.add(comida2);
-
-        List<Pedido> pedidosFrancisca = new ArrayList<>();
-        pedidosFrancisca.add(encomienda1);
-        pedidosFrancisca.add(express2);
-
-        List<Pedido> pedidosEduardo = new ArrayList<>();
-        pedidosEduardo.add(comida1);
-        pedidosEduardo.add(encomienda2);
-
-        // 3. instancias de Repartidor (Runnable)
-        Repartidor mario = new Repartidor("Mario", pedidosMario);
-        Repartidor francisca = new Repartidor("Francisca", pedidosFrancisca);
-        Repartidor eduardo = new Repartidor("Eduardo", pedidosEduardo);
-
-        // 4.ExecutorService para 3 hilos en paralelo
+        // Crear e iniciar el pool de hilos de repartidores
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
-        // 5. Iniciar la ejecución concurrente
-        executor.execute(mario);
-        executor.execute(francisca);
-        executor.execute(eduardo);
+        executor.execute(new Repartidor("Juan", zonaDeCarga));
+        executor.execute(new Repartidor("Camila", zonaDeCarga));
+        executor.execute(new Repartidor("Pedro", zonaDeCarga));
 
-        // 6. Detener la recepción de nuevas tareas
         executor.shutdown();
+
+        try {
+            if (executor.awaitTermination(1, TimeUnit.MINUTES)) {
+                System.out.println("\n[Zona de carga vacía]");
+                System.out.println("Todos los pedidos han sido entregados correctamente.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("La ejecución fue interrumpida.");
+        }
     }
 }

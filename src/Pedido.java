@@ -5,12 +5,14 @@ public abstract class Pedido {
     private String direccionEntrega;
     private int distanciaKm;
     protected String repartidor;
+    private EstadoPedido estado;
 
     //Constructor
     public Pedido(int idPedido, String direccionEntrega, int distanciaKm) {
         this.idPedido = idPedido;
         this.direccionEntrega = direccionEntrega;
         this.distanciaKm = distanciaKm;
+        this.estado = EstadoPedido.PENDIENTE;
 
     }
 
@@ -20,6 +22,7 @@ public abstract class Pedido {
         System.out.println("---Dirección de entrega: " + direccionEntrega);
         System.out.println("---Distancia (KM): " + distanciaKm);
         System.out.println("---Tiempo de entrega : " + calcularTiempoEntrega() + " minutos.");
+        System.out.println("---Estado: " + estado);
     }
 
     //Metodos
@@ -64,6 +67,14 @@ public abstract class Pedido {
 
     public void setRepartidor(String repartidor) {
         this.repartidor = repartidor;
+    }
+
+    public EstadoPedido getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoPedido estado) {
+        this.estado = estado;
     }
 }
 
