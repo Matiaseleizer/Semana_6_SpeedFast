@@ -1,3 +1,5 @@
+package modelo;
+
 public class PedidoEncomienda extends Pedido implements Despachable, Cancelable, Rastreable{
 
     public PedidoEncomienda(int idPedido, String direccionEntrega, int  distanciaKm) {
@@ -12,11 +14,11 @@ public class PedidoEncomienda extends Pedido implements Despachable, Cancelable,
     //Sobrescritura del metodo asignarRepartidor
     @Override
     public void asignarRepartidor(){
-        this.repartidor = "Repartidor de encomiendas";
+        this.repartidor = "modelo.Repartidor de encomiendas";
         System.out.println("Se asignó un repartidor de encomiendas para el pedido: #" + getIdPedido());
     }
 
-    //Sobrecarga del metodo asignarRepartidor en la clase PedidoEncomienda
+    //Sobrecarga del metodo asignarRepartidor en la clase modelo.PedidoEncomienda
     public void asignarRepartidor(String nombre){
         this.repartidor = nombre;
         System.out.println("Se asignó a " + nombre + " para la entrega de tu encomienda número #" + getIdPedido());

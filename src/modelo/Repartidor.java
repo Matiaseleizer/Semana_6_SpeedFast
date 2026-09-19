@@ -1,4 +1,4 @@
-import java.util.List;
+package modelo;
 
 public class Repartidor implements Runnable{
 
@@ -15,7 +15,7 @@ public class Repartidor implements Runnable{
 
         // Bucle dinámico: atiende la cola compartida mientras haya elementos
         while (true) {
-            // Extracción sincronizada desde la ZonaDeCarga
+            // Extracción sincronizada desde la modelo.ZonaDeCarga
             Pedido pedido = zonaDeCarga.retirarPedido();
 
             // Si la cola está vacía, el hilo concluye su jornada
@@ -27,7 +27,7 @@ public class Repartidor implements Runnable{
             pedido.setRepartidor(this.nombre);
             pedido.setEstado(EstadoPedido.EN_REPARTO);
 
-            System.out.println("[Repartidor: " + nombre + "] Retirando "
+            System.out.println("[modelo.Repartidor: " + nombre + "] Retirando "
                     + pedido.getClass().getSimpleName() + " #" + pedido.getIdPedido()
                     + " (Estado: " + pedido.getEstado() + ")...");
 
@@ -44,7 +44,7 @@ public class Repartidor implements Runnable{
 
             // Transición final a ENTREGADO
             pedido.setEstado(EstadoPedido.ENTREGADO);
-            System.out.println("[Repartidor: " + nombre + "] Pedido #" + pedido.getIdPedido()
+            System.out.println("[modelo.Repartidor: " + nombre + "] modelo.Pedido #" + pedido.getIdPedido()
                     + " entregado con éxito (Estado: " + pedido.getEstado() + ").");
         }
     }

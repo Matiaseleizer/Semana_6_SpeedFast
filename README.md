@@ -14,22 +14,22 @@ La aplicación simula un sistema de gestión, logística y reparto concurrente e
 
 **SpeedFast** optimiza y coordina sus entregas mediante un entorno multihilo sincronizado. Para evitar la **condición de carrera** (evitar que dos o más repartidores intenten retirar el mismo paquete simultáneamente), el sistema incorpora una **Zona de Carga** como recurso compartido seguro (*thread-safe*).
 
-Además, los pedidos transitan por un ciclo de vida bien definido representado por un tipo enumerado (`EstadoPedido`), garantizando trazabilidad y consistencia de datos durante toda la operación.
+Además, los pedidos transitan por un ciclo de vida bien definido representado por un tipo enumerado (`modelo.EstadoPedido`), garantizando trazabilidad y consistencia de datos durante toda la operación.
 
-* 📦 **ZonaDeCarga (Recurso Compartido):** Cola sincronizada que administra los pedidos pendientes.
-* 🚦 **EstadoPedido (Enum):** Control de transiciones de estado (`PENDIENTE`, `EN_REPARTO`, `ENTREGADO`).
-* 🛵 **Repartidor (Tarea Concurrente):** Hilo (`Runnable`) que retira pedidos de forma segura de la zona de carga, simula el tiempo de traslado (`Thread.sleep()`) e informa el avance por consola.
-* 🍕 **Subclases de Pedido (`PedidoComida`, `PedidoEncomienda`, `PedidoExpress`, `PedidoEstandar`):** Modelan las distintas especialidades de entregas dentro del sistema.
+* 📦 **modelo.ZonaDeCarga (Recurso Compartido):** Cola sincronizada que administra los pedidos pendientes.
+* 🚦 **modelo.EstadoPedido (Enum):** Control de transiciones de estado (`PENDIENTE`, `EN_REPARTO`, `ENTREGADO`).
+* 🛵 **modelo.Repartidor (Tarea Concurrente):** Hilo (`Runnable`) que retira pedidos de forma segura de la zona de carga, simula el tiempo de traslado (`Thread.sleep()`) e informa el avance por consola.
+* 🍕 **Subclases de modelo.Pedido (`modelo.PedidoComida`, `modelo.PedidoEncomienda`, `modelo.PedidoExpress`, `modelo.PedidoEstandar`):** Modelan las distintas especialidades de entregas dentro del sistema.
 
 ---
 
 ## 🛠️ Conceptos y Tecnologías Aplicadas
 
-1. **Sincronización y Recurso Compartido (`synchronized`):** La clase `ZonaDeCarga` protege el acceso a la cola de pedidos mediante métodos sincronizados (`agregarPedido()` y `retirarPedido()`), evitando condiciones de carrera entre hilos concurrentes.
-2. **Control de Estados (`EstadoPedido`):** Uso de un `enum` para garantizar el flujo correcto del ciclo de vida del envío (`PENDIENTE` ➔ `EN_REPARTO` ➔ `ENTREGADO`).
-3. **Programación Concurrente (`Runnable`):** La clase `Repartidor` implementa `Runnable` y consume pedidos dinámicamente en un bucle mientras existan entregas pendientes.
+1. **Sincronización y Recurso Compartido (`synchronized`):** La clase `modelo.ZonaDeCarga` protege el acceso a la cola de pedidos mediante métodos sincronizados (`agregarPedido()` y `retirarPedido()`), evitando condiciones de carrera entre hilos concurrentes.
+2. **Control de Estados (`modelo.EstadoPedido`):** Uso de un `enum` para garantizar el flujo correcto del ciclo de vida del envío (`PENDIENTE` ➔ `EN_REPARTO` ➔ `ENTREGADO`).
+3. **Programación Concurrente (`Runnable`):** La clase `modelo.Repartidor` implementa `Runnable` y consume pedidos dinámicamente en un bucle mientras existan entregas pendientes.
 4. **Pool de Hilos (`ExecutorService`):** Coordinación eficiente de repartidores simultáneos mediante `Executors.newFixedThreadPool(3)` en `Main.java`, con un cierre controlado vía `shutdown()` y `awaitTermination()`.
-5. **Abstracción, Herencia y Polimorfismo:** Mantención de la jerarquía previa con la clase abstracta `Pedido`, sus subclases concretas e interfaces de dominio (`Despachable`, `Cancelable`, `Rastreable`).
+5. **Abstracción, Herencia y Polimorfismo:** Mantención de la jerarquía previa con la clase abstracta `modelo.Pedido`, sus subclases concretas e interfaces de dominio (`modelo.Despachable`, `modelo.Cancelable`, `modelo.Rastreable`).
 
 ---
 
@@ -38,18 +38,18 @@ Además, los pedidos transitan por un ciclo de vida bien definido representado p
 ```text
 semana 5/
  ├── src/
- │    ├── Cancelable.java        # Interfaz para la gestión de cancelaciones
- │    ├── Despachable.java       # Interfaz para la gestión de despachos
- │    ├── Rastreable.java        # Interfaz para trazabilidad de envíos
- │    ├── EstadoPedido.java      # Enum con los estados (PENDIENTE, EN_REPARTO, ENTREGADO)
- │    ├── Pedido.java            # Clase base abstracta con atributo EstadoPedido
- │    ├── PedidoComida.java      # Subclase especializada en pedidos de restaurantes
- │    ├── PedidoEncomienda.java  # Subclase especializada en encomiendas
- │    ├── PedidoExpress.java     # Subclase especializada en compras rápidas
- │    ├── PedidoEstandar.java    # Subclase concreta estándar
- │    ├── ZonaDeCarga.java       # Recurso compartido sincronizado (Queue)
- │    ├── Repartidor.java        # Tarea ejecutable (Runnable) consumidora de ZonaDeCarga
- │    └── Main.java              # Clase principal con ExecutorService y ZonaDeCarga
+ │    ├── modelo.Cancelable.java        # Interfaz para la gestión de cancelaciones
+ │    ├── modelo.Despachable.java       # Interfaz para la gestión de despachos
+ │    ├── modelo.Rastreable.java        # Interfaz para trazabilidad de envíos
+ │    ├── modelo.EstadoPedido.java      # Enum con los estados (PENDIENTE, EN_REPARTO, ENTREGADO)
+ │    ├── modelo.Pedido.java            # Clase base abstracta con atributo modelo.EstadoPedido
+ │    ├── modelo.PedidoComida.java      # Subclase especializada en pedidos de restaurantes
+ │    ├── modelo.PedidoEncomienda.java  # Subclase especializada en encomiendas
+ │    ├── modelo.PedidoExpress.java     # Subclase especializada en compras rápidas
+ │    ├── modelo.PedidoEstandar.java    # Subclase concreta estándar
+ │    ├── modelo.ZonaDeCarga.java       # Recurso compartido sincronizado (Queue)
+ │    ├── modelo.Repartidor.java        # Tarea ejecutable (Runnable) consumidora de modelo.ZonaDeCarga
+ │    └── Main.java              # Clase principal con ExecutorService y modelo.ZonaDeCarga
  └── README.md                   # Documentación del proyecto
 
 ## ⚙️ Requisitos y Entorno de Ejecución

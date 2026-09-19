@@ -1,3 +1,5 @@
+package modelo;
+
 public abstract class Pedido {
 
     //Atributos
@@ -27,7 +29,7 @@ public abstract class Pedido {
 
     //Metodos
     public void asignarRepartidor(){
-        this.repartidor = "Repartidor estándar";
+        this.repartidor = "modelo.Repartidor estándar";
     }
 
     protected abstract int calcularTiempoEntrega(); //Metodo Abstracto

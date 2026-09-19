@@ -1,3 +1,4 @@
+package modelo;
 
 public class PedidoExpress extends Pedido implements Despachable, Cancelable, Rastreable{
 
@@ -14,14 +15,14 @@ public class PedidoExpress extends Pedido implements Despachable, Cancelable, Ra
         }
     }
 
-    //Sobreescritura, se asignó el metodo asignarRepartidor a PedidoExpress
+    //Sobreescritura, se asignó el metodo asignarRepartidor a modelo.PedidoExpress
     @Override
     public void asignarRepartidor(){
-        this.repartidor = "Repartidor Express";
+        this.repartidor = "modelo.Repartidor Express";
         System.out.println("Se asignó un repartidor express para el pedido: #" + getIdPedido());
     }
 
-    //Sobrecarga del metodo asignarRepartidor en la clase PedidoExpress
+    //Sobrecarga del metodo asignarRepartidor en la clase modelo.PedidoExpress
     public void asignarRepartidor(String nombre){
         this.repartidor = nombre;
         System.out.println("Se asignó a " + nombre + " para la entrega de tu pedido express #" + getIdPedido());

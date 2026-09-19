@@ -1,3 +1,5 @@
+package modelo;
+
 public class PedidoEstandar extends Pedido {
 
     public PedidoEstandar(int idPedido, String direccionEntrega, int distanciaKm) {
