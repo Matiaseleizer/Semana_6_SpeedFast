@@ -1,56 +1,67 @@
-# 🚀 SpeedFast - Sistema Multihilo y Sincronizado de Entregas
+# 🚀 SpeedFast - Sistema Multihilo y Sincronizado de Entregas (MVC + GUI Swing)
 
 ![Java](https://img.shields.io/badge/Java-17%2B-orange)
 ![IDE](https://img.shields.io/badge/IDE-IntelliJ%20IDEA-blue)
-![DuocUC](https://img.shields.io/badge/Evaluaci%C3%B3n-Sumativa%20Semana%205-003366)
+![DuocUC](https://img.shields.io/badge/Evaluaci%C3%B3n-Sumativa%20Semana%206-003366)
 
-Proyecto desarrollado para la asignatura **Desarrollo Orientado a Objetos II** de **Duoc UC Online** (Semana 5: *"Coordinación de entregas en SpeedFast - Sincronización y Gestión de Hilos"*).
+Proyecto desarrollado para la asignatura **Desarrollo Orientado a Objetos II** de **Duoc UC Online** (Semana 6: *"Diseño de interfaces gráficas con Swing y patrón de arquitectura MVC"*).
 
-La aplicación simula un sistema de gestión, logística y reparto concurrente en tiempo real para la empresa **SpeedFast**. Integra los pilares de la Programación Orientada a Objetos (**Abstracción**, **Encapsulamiento**, **Herencia**, **Interfaces**, **Polimorfismo**) junto con conceptos avanzados de **Programación Concurrente y Sincronización** (`Thread`, `Runnable`, `synchronized`, `ExecutorService`).
+La aplicación evoluciona la simulación multihilo previa de **SpeedFast** hacia un entorno visual interactivo, implementando el patrón **Modelo-Vista-Controlador (MVC)**, autenticación con control de acceso por roles y una interfaz gráfica responsiva basada en **Java Swing**.
 
 ---
 
-## 📋 Descripción del Caso (Semana 5)
+## 📋 Descripción del Caso (Semana 6)
 
-**SpeedFast** optimiza y coordina sus entregas mediante un entorno multihilo sincronizado. Para evitar la **condición de carrera** (evitar que dos o más repartidores intenten retirar el mismo paquete simultáneamente), el sistema incorpora una **Zona de Carga** como recurso compartido seguro (*thread-safe*).
+**SpeedFast** integra una capa de presentación visual que permite a los usuarios interactuar de forma intuitiva con el sistema de logística sin perder la potencia de la ejecución concurrente multihilo:
 
-Además, los pedidos transitan por un ciclo de vida bien definido representado por un tipo enumerado (`modelo.EstadoPedido`), garantizando trazabilidad y consistencia de datos durante toda la operación.
-
-* 📦 **modelo.ZonaDeCarga (Recurso Compartido):** Cola sincronizada que administra los pedidos pendientes.
-* 🚦 **modelo.EstadoPedido (Enum):** Control de transiciones de estado (`PENDIENTE`, `EN_REPARTO`, `ENTREGADO`).
-* 🛵 **modelo.Repartidor (Tarea Concurrente):** Hilo (`Runnable`) que retira pedidos de forma segura de la zona de carga, simula el tiempo de traslado (`Thread.sleep()`) e informa el avance por consola.
-* 🍕 **Subclases de modelo.Pedido (`modelo.PedidoComida`, `modelo.PedidoEncomienda`, `modelo.PedidoExpress`, `modelo.PedidoEstandar`):** Modelan las distintas especialidades de entregas dentro del sistema.
+* 🔐 **Autenticación y Roles:** Pantalla de inicio de sesión (`VentanaLogin`) que valida credenciales y restringe funciones según el rol (`Administrador` u `Operador`).
+* 📊 **Gestión Visual de Pedidos:** Tabla dinámica (`JTable` con `DefaultTableModel`) en la `VentanaGestionPedidos` que visualiza en tiempo real los elementos agregados a la `ZonaDeCarga`.
+* ⚡ **Ejecución Concurrente en GUI:** Integración de `ExecutorService` que ejecuta el proceso multihilo de reparto en segundo plano, evitando el congelamiento de la interfaz de usuario (*Event Dispatch Thread*).
 
 ---
 
 ## 🛠️ Conceptos y Tecnologías Aplicadas
 
-1. **Sincronización y Recurso Compartido (`synchronized`):** La clase `modelo.ZonaDeCarga` protege el acceso a la cola de pedidos mediante métodos sincronizados (`agregarPedido()` y `retirarPedido()`), evitando condiciones de carrera entre hilos concurrentes.
-2. **Control de Estados (`modelo.EstadoPedido`):** Uso de un `enum` para garantizar el flujo correcto del ciclo de vida del envío (`PENDIENTE` ➔ `EN_REPARTO` ➔ `ENTREGADO`).
-3. **Programación Concurrente (`Runnable`):** La clase `modelo.Repartidor` implementa `Runnable` y consume pedidos dinámicamente en un bucle mientras existan entregas pendientes.
-4. **Pool de Hilos (`ExecutorService`):** Coordinación eficiente de repartidores simultáneos mediante `Executors.newFixedThreadPool(3)` en `Main.java`, con un cierre controlado vía `shutdown()` y `awaitTermination()`.
-5. **Abstracción, Herencia y Polimorfismo:** Mantención de la jerarquía previa con la clase abstracta `modelo.Pedido`, sus subclases concretas e interfaces de dominio (`modelo.Despachable`, `modelo.Cancelable`, `modelo.Rastreable`).
+1. **Patrón de Arquitectura MVC (Modelo-Vista-Controlador):**
+    * **Modelo:** Clases de dominio (`Pedido`, `Usuario`, `ZonaDeCarga`, `Repartidor`, `EstadoPedido`, interfaces).
+    * **Controlador:** `ControladorUsuarios` (gestión de accesos) y `ControladorPedidos` (intermediario de datos y tabla).
+    * **Vista:** Formularios y ventanas gráficas desarrolladas en Java Swing.
+2. **Interfaz Gráfica de Usuario (Java Swing):** Uso de `JFrame`, `JTable`, `JComboBox`, `JTextField`, `JPasswordField` y gestores de diseño (`BorderLayout`, `GridLayout`, `FlowLayout`).
+3. **Control de Acceso y Roles:** Restricción de acciones en la GUI (el rol `Operador` registra pedidos, mientras que sólo `Administrador` puede disparar el reparto multihilo).
+4. **Programación Concurrente y Sincronización:** Recurso compartido seguro (`synchronized`) consumido por hilos `Runnable` administrados vía `ExecutorService` (`FixedThreadPool`).
+5. **POO Avanzada:** Aplicación de Abstracción, Herencia, Encapsulamiento, Polimorfismo e Interfaces (`Despachable`, `Cancelable`, `Rastreable`).
 
 ---
 
 ## 📁 Estructura del Proyecto
 
 ```text
-semana 5/
+semana 6/
  ├── src/
- │    ├── modelo.Cancelable.java        # Interfaz para la gestión de cancelaciones
- │    ├── modelo.Despachable.java       # Interfaz para la gestión de despachos
- │    ├── modelo.Rastreable.java        # Interfaz para trazabilidad de envíos
- │    ├── modelo.EstadoPedido.java      # Enum con los estados (PENDIENTE, EN_REPARTO, ENTREGADO)
- │    ├── modelo.Pedido.java            # Clase base abstracta con atributo modelo.EstadoPedido
- │    ├── modelo.PedidoComida.java      # Subclase especializada en pedidos de restaurantes
- │    ├── modelo.PedidoEncomienda.java  # Subclase especializada en encomiendas
- │    ├── modelo.PedidoExpress.java     # Subclase especializada en compras rápidas
- │    ├── modelo.PedidoEstandar.java    # Subclase concreta estándar
- │    ├── modelo.ZonaDeCarga.java       # Recurso compartido sincronizado (Queue)
- │    ├── modelo.Repartidor.java        # Tarea ejecutable (Runnable) consumidora de modelo.ZonaDeCarga
- │    └── Main.java              # Clase principal con ExecutorService y modelo.ZonaDeCarga
- └── README.md                   # Documentación del proyecto
+ │    ├── modelo/
+ │    │    ├── Cancelable.java        # Interfaz para cancelación
+ │    │    ├── Despachable.java       # Interfaz para despacho
+ │    │    ├── Rastreable.java        # Interfaz para historial y rastreo
+ │    │    ├── EstadoPedido.java      # Enum de estados (PENDIENTE, EN_REPARTO, ENTREGADO)
+ │    │    ├── Pedido.java            # Clase base abstracta
+ │    │    ├── PedidoComida.java      # Subclase especializada
+ │    │    ├── PedidoEncomienda.java  # Subclase especializada
+ │    │    ├── PedidoExpress.java     # Subclase especializada
+ │    │    ├── PedidoEstandar.java    # Subclase concreta estándar
+ │    │    ├── ZonaDeCarga.java       # Recurso compartido sincronizado
+ │    │    ├── Repartidor.java        # Tarea ejecutable (Runnable)
+ │    │    └── Usuario.java           # Entidad de usuario y permisos
+ │    │
+ │    ├── controlador/
+ │    │    ├── ControladorUsuarios.java # Lógica de autenticación
+ │    │    └── ControladorPedidos.java  # Puente entre el modelo y la vista JTable
+ │    │
+ │    ├── vista/
+ │    │    ├── VentanaLogin.java           # Interfaz de inicio de sesión
+ │    │    └── VentanaGestionPedidos.java  # Vista principal con JTable y formulario
+ │    │
+ │    └── Main.java                   # Punto de entrada (SwingUtilities.invokeLater)
+ └── README.md                        # Documentación del proyecto
 
 ## ⚙️ Requisitos y Entorno de Ejecución
 
